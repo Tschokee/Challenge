@@ -15,19 +15,19 @@ namespace Szakdolgozat
     /// <summary>
     /// This is the main type for your game
     /// </summary>
-    public class Game1 : Microsoft.Xna.Framework.Game
+    public class Game : Microsoft.Xna.Framework.Game
     {
         //KinectSensor ks = KinectSensor.KinectSensors[0];
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        Model model;
-        Matrix[] modelTransforms;
-        public Game1()
+        List<CustomModel> models = new List<CustomModel>();
+
+        public Game()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
 
-            graphics.PreferredBackBufferWidth = 800;
+            graphics.PreferredBackBufferWidth = 1200;
             graphics.PreferredBackBufferHeight = 600;
         }
 
@@ -50,13 +50,18 @@ namespace Szakdolgozat
         /// </summary>
         protected override void LoadContent()
         {
-            // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);
-            
-            model = Content.Load<Model>("Lightbulb");
-            modelTransforms = new Matrix[model.Bones.Count];
-            model.CopyAbsoluteBoneTransformsTo(modelTransforms);
             // TODO: use this.Content to load your game content here
+            // Create a new SpriteBatch, which can be used to draw textures.
+            for (int i = 0; i < 3; i++)
+                for (int j = 0; j < 3; j++)
+                {
+                    Vector3 position = new Vector3(-600 + j * 600, -400 + i * 400, 0);
+                    models.Add(new CustomModel(Content.Load<Model>("female elf-fbx"), 
+                    position,
+                    new Vector3(0, MathHelper.ToRadians(90) * (i * 3 + j), 0),
+                    new Vector3(1.25f),
+                    GraphicsDevice));
+                }
         }
 
         /// <summary>
@@ -94,27 +99,18 @@ namespace Szakdolgozat
 
             // TODO: Add your drawing code here
 
-            Matrix view = Matrix.CreateLookAt(new Vector3(200, 300, 900),new Vector3(0, 50, 0),Vector3.Up);
-            Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45),GraphicsDevice.Viewport.AspectRatio,0.1f, 10000.0f);
+            Matrix view = Matrix.CreateLookAt(new Vector3(0, 300, 2000),new Vector3(0, 0, 0),Vector3.Up);
+            Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45),
+                                                                    GraphicsDevice.Viewport.AspectRatio,
+                                                                    0.1f,
+                                                                    10000.0f);
             // Calculate the starting world matrix
             Matrix baseWorld = Matrix.CreateScale(0.4f) *
             Matrix.CreateRotationY(MathHelper.ToRadians(180));
-            foreach (ModelMesh mesh in model.Meshes)
-            {
-                // Calculate each mesh's world matrix
-                Matrix localWorld = modelTransforms[mesh.ParentBone.Index]* baseWorld;
-                foreach (ModelMeshPart part in mesh.MeshParts)
-                {
-                    BasicEffect e = (BasicEffect)part.Effect;
-                    // Set the world, view, and projection
-                    // matrices to the effect
-                    e.World = localWorld;
-                    e.View = view;
-                    e.Projection = projection;
-                    e.EnableDefaultLighting();
-                }
-                mesh.Draw();
-            }
+
+            foreach (CustomModel model in models)
+                model.Draw(view, projection);
+
             base.Draw(gameTime);
         }
     }
