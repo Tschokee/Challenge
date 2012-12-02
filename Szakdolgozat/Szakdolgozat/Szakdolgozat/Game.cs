@@ -21,6 +21,7 @@ namespace Szakdolgozat
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         List<CustomModel> models = new List<CustomModel>();
+        Camera camera;
 
         public Game()
         {
@@ -52,16 +53,20 @@ namespace Szakdolgozat
         {
             // TODO: use this.Content to load your game content here
             // Create a new SpriteBatch, which can be used to draw textures.
-            for (int i = 0; i < 3; i++)
-                for (int j = 0; j < 3; j++)
-                {
-                    Vector3 position = new Vector3(-600 + j * 600, -400 + i * 400, 0);
-                    models.Add(new CustomModel(Content.Load<Model>("female elf-fbx"), 
-                    position,
-                    new Vector3(0, MathHelper.ToRadians(90) * (i * 3 + j), 0),
-                    new Vector3(1.25f),
-                    GraphicsDevice));
-                }
+
+            //for (int i = 0; i < 3; i++)
+            //    for (int j = 0; j < 3; j++)
+            //    {
+            //        Vector3 position = new Vector3(-600 + j * 600, -400 + i * 400, 0);
+            //        models.Add(new CustomModel(Content.Load<Model>("female elf-fbx"), 
+            //        position,
+            //        new Vector3(0, MathHelper.ToRadians(90) * (i * 3 + j), 0),
+            //        new Vector3(1.25f),
+            //        GraphicsDevice));
+            //    }
+
+            models.Add(new CustomModel(Content.Load<Model>("female elf-fbx"),Vector3.Zero,Vector3.Zero,new Vector3(2.0f),GraphicsDevice));
+            camera = new TargetCamera(new Vector3(300, 300, 1800),Vector3.Zero, GraphicsDevice);
         }
 
         /// <summary>
@@ -85,7 +90,7 @@ namespace Szakdolgozat
                 this.Exit();
 
             // TODO: Add your update logic here
-
+            camera.Update();
             base.Update(gameTime);
         }
 
@@ -99,17 +104,8 @@ namespace Szakdolgozat
 
             // TODO: Add your drawing code here
 
-            Matrix view = Matrix.CreateLookAt(new Vector3(0, 300, 2000),new Vector3(0, 0, 0),Vector3.Up);
-            Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45),
-                                                                    GraphicsDevice.Viewport.AspectRatio,
-                                                                    0.1f,
-                                                                    10000.0f);
-            // Calculate the starting world matrix
-            Matrix baseWorld = Matrix.CreateScale(0.4f) *
-            Matrix.CreateRotationY(MathHelper.ToRadians(180));
-
             foreach (CustomModel model in models)
-                model.Draw(view, projection);
+                model.Draw(camera.View, camera.Projection);
 
             base.Draw(gameTime);
         }
