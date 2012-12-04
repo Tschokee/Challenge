@@ -19,7 +19,6 @@ namespace Szakdolgozat
     {
         //KinectSensor ks = KinectSensor.KinectSensors[0];
         GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
         List<CustomModel> models = new List<CustomModel>();
         Camera camera;
 

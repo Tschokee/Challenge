@@ -21,6 +21,19 @@ namespace Szakdolgozat
         public Model Model { get; private set; }
         private Matrix[] modelTransforms;
         private GraphicsDevice graphicsDevice;
+        private BoundingSphere boundingSphere;
+        public BoundingSphere BoundingSphere
+        {
+            get
+            {
+                // No need for rotation, as this is a sphere
+                Matrix worldTransform = Matrix.CreateScale(Scale)
+                * Matrix.CreateTranslation(Position);
+                BoundingSphere transformed = boundingSphere;
+                transformed = transformed.Transform(worldTransform);
+                return transformed;
+            }
+        }
 
         public CustomModel(Model Model, 
             Vector3 Position, 
@@ -31,10 +44,23 @@ namespace Szakdolgozat
             this.Model = Model;
             modelTransforms = new Matrix[Model.Bones.Count];
             Model.CopyAbsoluteBoneTransformsTo(modelTransforms);
+            buildBoundingSphere();
             this.Position = Position;
             this.Rotation = Rotation;
             this.Scale = Scale;
             this.graphicsDevice = graphicsDevice;
+        }
+
+        private void buildBoundingSphere()
+        {
+            BoundingSphere sphere = new BoundingSphere(Vector3.Zero, 0);
+            // Merge all the model's built in bounding spheres
+            foreach (ModelMesh mesh in Model.Meshes)
+            {
+                BoundingSphere transformed = mesh.BoundingSphere.Transform(modelTransforms[mesh.ParentBone.Index]);
+                sphere = BoundingSphere.CreateMerged(sphere, transformed);
+            }
+            this.boundingSphere = sphere;
         }
 
         public void Draw(Matrix View, Matrix Projection)
