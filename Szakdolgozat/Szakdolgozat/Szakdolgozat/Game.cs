@@ -65,6 +65,7 @@ namespace Szakdolgozat
             //    }
 
             models.Add(new CustomModel(Content.Load<Model>("female elf-fbx"),Vector3.Zero,Vector3.Zero,new Vector3(2.0f),GraphicsDevice));
+            models.Add(new CustomModel(Content.Load<Model>("Lightbulb"), Vector3.Zero, Vector3.Zero, new Vector3(2.0f), GraphicsDevice));
             camera = new TargetCamera(new Vector3(300, 300, 1800),Vector3.Zero, GraphicsDevice);
         }
 
@@ -90,8 +91,32 @@ namespace Szakdolgozat
 
             // TODO: Add your update logic here
             camera.Update();
+            updateModel(gameTime);
             base.Update(gameTime);
         }
+
+        void updateModel(GameTime gameTime)
+        {
+            KeyboardState keyState = Keyboard.GetState();
+            Vector3 rotChange = new Vector3(0, 0, 0);
+            // Determine on which axes the ship should be rotated on, if any
+            if (keyState.IsKeyDown(Keys.W))
+                 rotChange += new Vector3(1, 0, 0);
+            if (keyState.IsKeyDown(Keys.S))
+                rotChange += new Vector3(-1, 0, 0);
+            if (keyState.IsKeyDown(Keys.A))
+                rotChange += new Vector3(0, 1, 0);
+            if (keyState.IsKeyDown(Keys.D))
+                rotChange += new Vector3(0, -1, 0);
+            models[0].Rotation += rotChange * .025f;
+            // If space isn't down, the ship shouldn't move
+            if (!keyState.IsKeyDown(Keys.Space))
+                return;
+            // Determine what direction to move in
+            Matrix rotation = Matrix.CreateFromYawPitchRoll(models[0].Rotation.Y, models[0].Rotation.X,models[0].Rotation.Z);
+            // Move in the direction dictated by our rotation matrix
+            models[0].Position += Vector3.Transform(Vector3.Forward,rotation) * (float)gameTime.ElapsedGameTime.TotalMilliseconds *4;
+}
 
         /// <summary>
         /// This is called when the game should draw itself.
