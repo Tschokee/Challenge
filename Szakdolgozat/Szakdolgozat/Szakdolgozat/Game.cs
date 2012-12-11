@@ -53,20 +53,10 @@ namespace Szakdolgozat
             // TODO: use this.Content to load your game content here
             // Create a new SpriteBatch, which can be used to draw textures.
 
-            //for (int i = 0; i < 3; i++)
-            //    for (int j = 0; j < 3; j++)
-            //    {
-            //        Vector3 position = new Vector3(-600 + j * 600, -400 + i * 400, 0);
-            //        models.Add(new CustomModel(Content.Load<Model>("female elf-fbx"), 
-            //        position,
-            //        new Vector3(0, MathHelper.ToRadians(90) * (i * 3 + j), 0),
-            //        new Vector3(1.25f),
-            //        GraphicsDevice));
-            //    }
-
             models.Add(new CustomModel(Content.Load<Model>("female elf-fbx"),Vector3.Zero,Vector3.Zero,new Vector3(2.0f),GraphicsDevice));
             models.Add(new CustomModel(Content.Load<Model>("Lightbulb"), Vector3.Zero, Vector3.Zero, new Vector3(2.0f), GraphicsDevice));
-            camera = new TargetCamera(new Vector3(300, 300, 1800),Vector3.Zero, GraphicsDevice);
+           // camera = new TargetCamera(new Vector3(300, 300, 1800),Vector3.Zero, GraphicsDevice);
+            camera = new ChaseCamera(new Vector3(0, 400, 1500),new Vector3(0, 200, 0),new Vector3(0, 0, 0), GraphicsDevice);
         }
 
         /// <summary>
@@ -92,6 +82,7 @@ namespace Szakdolgozat
             // TODO: Add your update logic here
             camera.Update();
             updateModel(gameTime);
+            updateCamera(gameTime);
             base.Update(gameTime);
         }
 
@@ -116,7 +107,15 @@ namespace Szakdolgozat
             Matrix rotation = Matrix.CreateFromYawPitchRoll(models[0].Rotation.Y, models[0].Rotation.X,models[0].Rotation.Z);
             // Move in the direction dictated by our rotation matrix
             models[0].Position += Vector3.Transform(Vector3.Forward,rotation) * (float)gameTime.ElapsedGameTime.TotalMilliseconds *4;
-}
+        }
+
+        void updateCamera(GameTime gameTime)
+        {
+            // Move the camera to the new model's position and orientation
+            ((ChaseCamera)camera).Move(models[0].Position,models[0].Rotation);
+            // Update the camera
+            camera.Update();
+        }
 
         /// <summary>
         /// This is called when the game should draw itself.
