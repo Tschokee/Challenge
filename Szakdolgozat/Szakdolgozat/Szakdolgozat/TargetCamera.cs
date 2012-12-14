@@ -26,7 +26,7 @@ namespace Szakdolgozat
         public override void Update()
         {
             Vector3 forward = Target - Position;
-            Vector3 side = Vector3.Cross(forward, Vector3.Up);
+            Vector3 side = Vector3.Cross(forward, Vector3.Down);
             Vector3 up = Vector3.Cross(forward, side);
             this.View = Matrix.CreateLookAt(Position, Target, up);
         }
