@@ -53,7 +53,7 @@ namespace Szakdolgozat
             // TODO: use this.Content to load your game content here
             // Create a new SpriteBatch, which can be used to draw textures.
 
-            models.Add(new CustomModel(Content.Load<Model>("female elf-fbx"),Vector3.Zero,Vector3.Zero,new Vector3(2.0f),GraphicsDevice));
+            models.Add(new CustomModel(Content.Load<Model>("fleurOptonl"),Vector3.Zero,Vector3.Zero,new Vector3(20.0f),GraphicsDevice));
             models.Add(new CustomModel(Content.Load<Model>("Lightbulb"), Vector3.Zero, Vector3.Zero, new Vector3(2.0f), GraphicsDevice));
            // camera = new TargetCamera(new Vector3(300, 300, 1800),Vector3.Zero, GraphicsDevice);
             camera = new ChaseCamera(new Vector3(0, 400, 1500),new Vector3(0, 200, 0),new Vector3(0, 0, 0), GraphicsDevice);
