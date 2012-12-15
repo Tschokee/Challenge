@@ -21,6 +21,7 @@ namespace Szakdolgozat
         GraphicsDeviceManager graphics;
         List<CustomModel> models = new List<CustomModel>();
         Camera camera;
+        ObjectAnimation anim;
 
         public Game()
         {
@@ -57,6 +58,8 @@ namespace Szakdolgozat
             models.Add(new CustomModel(Content.Load<Model>("Lightbulb"), Vector3.Zero, Vector3.Zero, new Vector3(2.0f), GraphicsDevice));
             camera = new TargetCamera(new Vector3(1200, 0, 0),Vector3.Zero, GraphicsDevice);
             //camera = new ChaseCamera(new Vector3(0, 400, 1500),new Vector3(0, 200, 0),new Vector3(0, 0, 0), GraphicsDevice);
+            anim = new ObjectAnimation(new Vector3(0, -150, 0),new Vector3(0, 150, 0),Vector3.Zero,
+                                       new Vector3(0, -MathHelper.TwoPi, 0),TimeSpan.FromSeconds(10), true);
         }
 
         /// <summary>
@@ -84,6 +87,9 @@ namespace Szakdolgozat
             updateModel(gameTime);
             updateCamera(gameTime);
             base.Update(gameTime);
+            anim.Update(gameTime.ElapsedGameTime);
+            models[1].Position = anim.Position;
+            models[1].Rotation = anim.Rotation;
         }
 
         void updateModel(GameTime gameTime)

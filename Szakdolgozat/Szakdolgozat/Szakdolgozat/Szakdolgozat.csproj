@@ -112,6 +112,9 @@
     <Compile Include="ChaseCamera.cs" />
     <Compile Include="CustomModel.cs" />
     <Compile Include="FreeCamera.cs" />
+    <Compile Include="KeyframedObjectAnimation.cs" />
+    <Compile Include="ObjectAnimation.cs" />
+    <Compile Include="ObjectAnimationFrame.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Game.cs" />
