@@ -54,9 +54,10 @@ namespace Szakdolgozat
             // TODO: use this.Content to load your game content here
             // Create a new SpriteBatch, which can be used to draw textures.
 
-            models.Add(new CustomModel(Content.Load<Model>("fleurOptonl"),Vector3.Zero,Vector3.Zero,new Vector3(20.0f),GraphicsDevice));
-            models.Add(new CustomModel(Content.Load<Model>("Lightbulb"), Vector3.Zero, Vector3.Zero, new Vector3(2.0f), GraphicsDevice));
-            camera = new TargetCamera(new Vector3(1200, 0, 0),Vector3.Zero, GraphicsDevice);
+            models.Add(new CustomModel(Content.Load<Model>("body"),Vector3.Zero,new Vector3(0,0,0),new Vector3(50.0f),GraphicsDevice));
+            models.Add(new CustomModel(Content.Load<Model>("hand"), new Vector3(-400,200,0), new Vector3(0, 0, 0), new Vector3(50.0f), GraphicsDevice));
+            //models.Add(new CustomModel(Content.Load<Model>("Lightbulb"), Vector3.Zero, Vector3.Zero, new Vector3(2.0f), GraphicsDevice));
+            camera = new TargetCamera(new Vector3(0, 0, 1200),Vector3.Zero, GraphicsDevice);
             //camera = new ChaseCamera(new Vector3(0, 400, 1500),new Vector3(0, 200, 0),new Vector3(0, 0, 0), GraphicsDevice);
             anim = new ObjectAnimation(new Vector3(0, -150, 0),new Vector3(0, 150, 0),Vector3.Zero,
                                        new Vector3(0, -MathHelper.TwoPi, 0),TimeSpan.FromSeconds(10), true);
@@ -88,8 +89,8 @@ namespace Szakdolgozat
             updateCamera(gameTime);
             base.Update(gameTime);
             anim.Update(gameTime.ElapsedGameTime);
-            models[1].Position = anim.Position;
-            models[1].Rotation = anim.Rotation;
+            //models[1].Position = anim.Position;
+            //models[1].Rotation = anim.Rotation;
         }
 
         void updateModel(GameTime gameTime)
