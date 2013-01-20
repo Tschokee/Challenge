@@ -7,5 +7,7 @@ Content\textures\capgonnacol_0.xnb
 Content\textures\corpoDefinitivoOpt_0.xnb
 Content\textures\nuoviCap_0.xnb
 Content\character.xnb
-Content\hand.xnb
 Content\body.xnb
+Content\lefthand.xnb
+Content\righthand.xnb
+Content\rigged_character.xnb

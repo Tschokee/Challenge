@@ -41,7 +41,6 @@ namespace Szakdolgozat
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-
             base.Initialize();
         }
 
@@ -55,8 +54,9 @@ namespace Szakdolgozat
             // Create a new SpriteBatch, which can be used to draw textures.
 
             models.Add(new CustomModel(Content.Load<Model>("body"),Vector3.Zero,new Vector3(0,0,0),new Vector3(50.0f),GraphicsDevice));
-            models.Add(new CustomModel(Content.Load<Model>("hand"), new Vector3(-400,200,0), new Vector3(0, 0, 0), new Vector3(50.0f), GraphicsDevice));
-            //models.Add(new CustomModel(Content.Load<Model>("Lightbulb"), Vector3.Zero, Vector3.Zero, new Vector3(2.0f), GraphicsDevice));
+            models.Add(new CustomModel(Content.Load<Model>("righthand"), new Vector3(-400,200,0), new Vector3(0, 0, 0), new Vector3(50.0f), GraphicsDevice));
+            models.Add(new CustomModel(Content.Load<Model>("lefthand"), new Vector3(400, 200, 0), new Vector3(0, 0, 0), new Vector3(50.0f), GraphicsDevice));
+            models.Add(new CustomModel(Content.Load<Model>("Lightbulb"), new Vector3(300,-150,0), Vector3.Zero, new Vector3(.5f), GraphicsDevice));
             camera = new TargetCamera(new Vector3(0, 0, 1200),Vector3.Zero, GraphicsDevice);
             //camera = new ChaseCamera(new Vector3(0, 400, 1500),new Vector3(0, 200, 0),new Vector3(0, 0, 0), GraphicsDevice);
             anim = new ObjectAnimation(new Vector3(0, -150, 0),new Vector3(0, 150, 0),Vector3.Zero,
@@ -95,25 +95,40 @@ namespace Szakdolgozat
 
         void updateModel(GameTime gameTime)
         {
+            //KeyboardState keyState = Keyboard.GetState();
+            //Vector3 rotChange = new Vector3(0, 0, 0);
+            //// Determine on which axes the ship should be rotated on, if any
+            //if (keyState.IsKeyDown(Keys.W))
+            //     rotChange += new Vector3(1, 0, 0);
+            //if (keyState.IsKeyDown(Keys.S))
+            //    rotChange += new Vector3(-1, 0, 0);
+            //if (keyState.IsKeyDown(Keys.A))
+            //    rotChange += new Vector3(0, 1, 0);
+            //if (keyState.IsKeyDown(Keys.D))
+            //    rotChange += new Vector3(0, -1, 0);
+            //models[0].Rotation += rotChange * .025f;
+            //// If space isn't down, the ship shouldn't move
+            //if (!keyState.IsKeyDown(Keys.Space))
+            //    return;
+            //// Determine what direction to move in
+            //Matrix rotation = Matrix.CreateFromYawPitchRoll(models[0].Rotation.Y, models[0].Rotation.X,models[0].Rotation.Z);
+            //// Move in the direction dictated by our rotation matrix
+            //models[0].Position += Vector3.Transform(Vector3.Forward,rotation) * (float)gameTime.ElapsedGameTime.TotalMilliseconds *4;
             KeyboardState keyState = Keyboard.GetState();
-            Vector3 rotChange = new Vector3(0, 0, 0);
-            // Determine on which axes the ship should be rotated on, if any
-            if (keyState.IsKeyDown(Keys.W))
-                 rotChange += new Vector3(1, 0, 0);
-            if (keyState.IsKeyDown(Keys.S))
-                rotChange += new Vector3(-1, 0, 0);
-            if (keyState.IsKeyDown(Keys.A))
-                rotChange += new Vector3(0, 1, 0);
+            Vector3 posChange = new Vector3(0, 0, 0);
             if (keyState.IsKeyDown(Keys.D))
-                rotChange += new Vector3(0, -1, 0);
-            models[0].Rotation += rotChange * .025f;
-            // If space isn't down, the ship shouldn't move
-            if (!keyState.IsKeyDown(Keys.Space))
+                posChange += new Vector3(1, 0, 0);
+            if (keyState.IsKeyDown(Keys.A))
+                posChange += new Vector3(-1, 0, 0);
+            if (keyState.IsKeyDown(Keys.W))
+                posChange += new Vector3(0, 1, 0);
+            if (keyState.IsKeyDown(Keys.S))
+                posChange += new Vector3(0, -1, 0);
+            models[2].Position += posChange * 10f;
+            if (keyState.IsKeyUp(Keys.Space))
                 return;
-            // Determine what direction to move in
-            Matrix rotation = Matrix.CreateFromYawPitchRoll(models[0].Rotation.Y, models[0].Rotation.X,models[0].Rotation.Z);
-            // Move in the direction dictated by our rotation matrix
-            models[0].Position += Vector3.Transform(Vector3.Forward,rotation) * (float)gameTime.ElapsedGameTime.TotalMilliseconds *4;
+            Matrix rotation = Matrix.CreateFromYawPitchRoll(models[2].Rotation.Y, models[2].Rotation.X, models[2].Rotation.Z);
+            models[2].Position += Vector3.Transform(Vector3.Forward, rotation) * (float)gameTime.ElapsedGameTime.TotalMilliseconds * 4;
         }
 
         void updateCamera(GameTime gameTime)
@@ -122,6 +137,13 @@ namespace Szakdolgozat
             //((ChaseCamera)camera).Move(models[0].Position,models[0].Rotation);
             // Update the camera
             camera.Update();
+        }
+
+        public bool collisionDetect()
+        {
+            if (models[2].BoundingSphere.Intersects(models[3].BoundingSphere))
+                return true;
+            return false;
         }
 
         /// <summary>
@@ -135,7 +157,10 @@ namespace Szakdolgozat
             // TODO: Add your drawing code here
 
             foreach (CustomModel model in models)
+            {
+                if(!collisionDetect())
                 model.Draw(camera.View, camera.Projection);
+            }
 
             base.Draw(gameTime);
         }

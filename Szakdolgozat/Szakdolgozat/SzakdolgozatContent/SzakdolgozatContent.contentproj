@@ -84,15 +84,29 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="hand.fbx">
-      <Name>hand</Name>
+    <Compile Include="body.fbx">
+      <Name>body</Name>
       <Importer>FbxImporter</Importer>
       <Processor>ModelProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="body.fbx">
-      <Name>body</Name>
+    <Compile Include="lefthand.fbx">
+      <Name>lefthand</Name>
+      <Importer>FbxImporter</Importer>
+      <Processor>ModelProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="righthand.fbx">
+      <Name>righthand</Name>
+      <Importer>FbxImporter</Importer>
+      <Processor>ModelProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="rigged_character.fbx">
+      <Name>rigged_character</Name>
       <Importer>FbxImporter</Importer>
       <Processor>ModelProcessor</Processor>
     </Compile>
