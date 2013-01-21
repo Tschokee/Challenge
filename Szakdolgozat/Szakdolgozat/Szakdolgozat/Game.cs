@@ -20,6 +20,7 @@ namespace Szakdolgozat
         //KinectSensor ks = KinectSensor.KinectSensors[0];
         GraphicsDeviceManager graphics;
         List<CustomModel> models = new List<CustomModel>();
+        CustomModel catchableObject;
         Camera camera;
         ObjectAnimation anim;
 
@@ -56,7 +57,7 @@ namespace Szakdolgozat
             models.Add(new CustomModel(Content.Load<Model>("body"),Vector3.Zero,new Vector3(0,0,0),new Vector3(50.0f),GraphicsDevice));
             models.Add(new CustomModel(Content.Load<Model>("righthand"), new Vector3(-400,200,0), new Vector3(0, 0, 0), new Vector3(50.0f), GraphicsDevice));
             models.Add(new CustomModel(Content.Load<Model>("lefthand"), new Vector3(400, 200, 0), new Vector3(0, 0, 0), new Vector3(50.0f), GraphicsDevice));
-            models.Add(new CustomModel(Content.Load<Model>("Lightbulb"), new Vector3(300,-150,0), Vector3.Zero, new Vector3(.5f), GraphicsDevice));
+            catchableObject = new CustomModel(Content.Load<Model>("Lightbulb"), new Vector3(300,-150,0), Vector3.Zero, new Vector3(.5f), GraphicsDevice);
             camera = new TargetCamera(new Vector3(0, 0, 1200),Vector3.Zero, GraphicsDevice);
             //camera = new ChaseCamera(new Vector3(0, 400, 1500),new Vector3(0, 200, 0),new Vector3(0, 0, 0), GraphicsDevice);
             anim = new ObjectAnimation(new Vector3(0, -150, 0),new Vector3(0, 150, 0),Vector3.Zero,
@@ -80,7 +81,7 @@ namespace Szakdolgozat
         protected override void Update(GameTime gameTime)
         {
             // Allows the game to exit
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 this.Exit();
 
             // TODO: Add your update logic here
@@ -114,6 +115,8 @@ namespace Szakdolgozat
             //Matrix rotation = Matrix.CreateFromYawPitchRoll(models[0].Rotation.Y, models[0].Rotation.X,models[0].Rotation.Z);
             //// Move in the direction dictated by our rotation matrix
             //models[0].Position += Vector3.Transform(Vector3.Forward,rotation) * (float)gameTime.ElapsedGameTime.TotalMilliseconds *4;
+            if (collisionDetect())
+                catchableObject.Position = generateRandomVector();
             KeyboardState keyState = Keyboard.GetState();
             Vector3 posChange = new Vector3(0, 0, 0);
             if (keyState.IsKeyDown(Keys.D))
@@ -141,9 +144,22 @@ namespace Szakdolgozat
 
         public bool collisionDetect()
         {
-            if (models[2].BoundingSphere.Intersects(models[3].BoundingSphere))
+            if (models[2].BoundingSphere.Intersects(catchableObject.BoundingSphere))
                 return true;
             return false;
+        }
+
+        public Vector3 generateRandomVector()
+        {
+            Vector3 v3 = Vector3.Zero;
+            Random rnd = new Random();
+            v3.X = rnd.Next(200, 500);
+            v3.Y = rnd.Next(250);
+            if (rnd.Next(100) % 2 == 0)
+                v3.X*=-1;
+            if (rnd.Next(100) % 2 == 0)
+                v3.Y *= -1;
+            return v3;     
         }
 
         /// <summary>
@@ -157,10 +173,9 @@ namespace Szakdolgozat
             // TODO: Add your drawing code here
 
             foreach (CustomModel model in models)
-            {
-                if(!collisionDetect())
                 model.Draw(camera.View, camera.Projection);
-            }
+            if(!collisionDetect())
+            catchableObject.Draw(camera.View, camera.Projection);
 
             base.Draw(gameTime);
         }
