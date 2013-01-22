@@ -23,7 +23,7 @@ namespace Szakdolgozat
         CustomModel catchableObject;
         Camera camera;
         ObjectAnimation anim;
-
+  
         public Game()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -51,9 +51,6 @@ namespace Szakdolgozat
         /// </summary>
         protected override void LoadContent()
         {
-            // TODO: use this.Content to load your game content here
-            // Create a new SpriteBatch, which can be used to draw textures.
-
             models.Add(new CustomModel(Content.Load<Model>("body"),Vector3.Zero,new Vector3(0,0,0),new Vector3(50.0f),GraphicsDevice));
             models.Add(new CustomModel(Content.Load<Model>("righthand"), new Vector3(-400,200,0), new Vector3(0, 0, 0), new Vector3(50.0f), GraphicsDevice));
             models.Add(new CustomModel(Content.Load<Model>("lefthand"), new Vector3(400, 200, 0), new Vector3(0, 0, 0), new Vector3(50.0f), GraphicsDevice));
