@@ -23,6 +23,7 @@ namespace Szakdolgozat
         CustomModel catchableObject;
         Camera camera;
         ObjectAnimation anim;
+        int score = 0;
   
         public Game()
         {
@@ -78,7 +79,7 @@ namespace Szakdolgozat
         protected override void Update(GameTime gameTime)
         {
             // Allows the game to exit
-            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape) || score == 4)
                 this.Exit();
 
             // TODO: Add your update logic here
@@ -113,7 +114,10 @@ namespace Szakdolgozat
             //// Move in the direction dictated by our rotation matrix
             //models[0].Position += Vector3.Transform(Vector3.Forward,rotation) * (float)gameTime.ElapsedGameTime.TotalMilliseconds *4;
             if (collisionDetect())
+            {
+                score++;
                 catchableObject.Position = generateRandomVector();
+            }
             KeyboardState keyState = Keyboard.GetState();
             Vector3 posChange = new Vector3(0, 0, 0);
             if (keyState.IsKeyDown(Keys.D))
@@ -166,13 +170,12 @@ namespace Szakdolgozat
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
             // TODO: Add your drawing code here
 
             foreach (CustomModel model in models)
                 model.Draw(camera.View, camera.Projection);
             if(!collisionDetect())
-            catchableObject.Draw(camera.View, camera.Projection);
+                catchableObject.Draw(camera.View, camera.Projection);
 
             base.Draw(gameTime);
         }

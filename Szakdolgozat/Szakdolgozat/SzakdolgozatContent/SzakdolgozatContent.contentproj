@@ -84,13 +84,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="body.fbx">
-      <Name>body</Name>
-      <Importer>FbxImporter</Importer>
-      <Processor>ModelProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="lefthand.fbx">
       <Name>lefthand</Name>
       <Importer>FbxImporter</Importer>
@@ -116,6 +109,13 @@
       <Name>Arial</Name>
       <Importer>FontDescriptionImporter</Importer>
       <Processor>FontDescriptionProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="body.fbx">
+      <Name>body</Name>
+      <Importer>FbxImporter</Importer>
+      <Processor>ModelProcessor</Processor>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />
