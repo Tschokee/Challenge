@@ -112,6 +112,13 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ice_cream.fbx">
+      <Name>ice_cream</Name>
+      <Importer>FbxImporter</Importer>
+      <Processor>ModelProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="body.fbx">
       <Name>body</Name>
       <Importer>FbxImporter</Importer>
@@ -119,8 +126,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ice_cream.fbx">
-      <Name>ice_cream</Name>
+    <Compile Include="foot.fbx">
+      <Name>foot</Name>
       <Importer>FbxImporter</Importer>
       <Processor>ModelProcessor</Processor>
     </Compile>
