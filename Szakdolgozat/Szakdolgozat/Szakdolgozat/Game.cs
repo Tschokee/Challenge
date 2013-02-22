@@ -57,8 +57,8 @@ namespace Szakdolgozat
             models.Add(new CustomModel(Content.Load<Model>("lefthand"), new Vector3(400, 200, 0), new Vector3(0, 0, 0), new Vector3(50.0f), GraphicsDevice));
             models.Add(new CustomModel(Content.Load<Model>("foot"), new Vector3(100, 0, 0), new Vector3(0, 0, 0), new Vector3(30.0f, 50.0f, 50.0f), GraphicsDevice));
             models.Add(new CustomModel(Content.Load<Model>("foot"), new Vector3(-100, 0, 0), new Vector3(0, 0, 0), new Vector3(30.0f, 50.0f, 50.0f), GraphicsDevice));
-            models.Add(new CustomModel(Content.Load<Model>("ground"), new Vector3(0, 0, -500), new Vector3(0, 0, 0), new Vector3(150.0f), GraphicsDevice));
-            models.Add(new CustomModel(Content.Load<Model>("palm_tree"), new Vector3(-800, 0, -100), new Vector3(80, 0, 0), new Vector3(50.0f), GraphicsDevice));
+            models.Add(new CustomModel(Content.Load<Model>("ground"), new Vector3(0, 0, -700), new Vector3(0, 0, 0), new Vector3(150.0f), GraphicsDevice));
+            models.Add(new CustomModel(Content.Load<Model>("palm_tree"), new Vector3(-950, 300, -50), new Vector3(80, 0, 0), new Vector3(100.0f), GraphicsDevice));
             catchableObject = new CustomModel(Content.Load<Model>("ice_cream"), new Vector3(300,-150,0), Vector3.Zero, new Vector3(100.0f), GraphicsDevice);
             camera = new TargetCamera(new Vector3(0, 0, 1200),Vector3.Zero, GraphicsDevice);
             //camera = new ChaseCamera(new Vector3(0, 400, 1500),new Vector3(0, 200, 0),new Vector3(0, 0, 0), GraphicsDevice);
