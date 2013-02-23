@@ -119,7 +119,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Game.cs" />
-    <Compile Include="SkinnedModelProcessor.cs" />
     <Compile Include="TargetCamera.cs" />
   </ItemGroup>
   <ItemGroup>
