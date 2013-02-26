@@ -26,7 +26,6 @@ namespace Szakdolgozat
         {
             get
             {
-                // No need for rotation, as this is a sphere
                 Matrix worldTransform = Matrix.CreateScale(Scale)
                 * Matrix.CreateTranslation(Position);
                 BoundingSphere transformed = boundingSphere;
@@ -53,14 +52,17 @@ namespace Szakdolgozat
 
         private void buildBoundingSphere()
         {
+
             BoundingSphere sphere = new BoundingSphere(Vector3.Zero, 0);
-            // Merge all the model's built in bounding spheres
+
             foreach (ModelMesh mesh in Model.Meshes)
             {
-                BoundingSphere transformed = mesh.BoundingSphere.Transform(modelTransforms[mesh.ParentBone.Index]);
+                BoundingSphere transformed =
+                    mesh.BoundingSphere.Transform(modelTransforms[mesh.ParentBone.Index]);
                 sphere = BoundingSphere.CreateMerged(sphere, transformed);
             }
             this.boundingSphere = sphere;
+
         }
 
         public void Draw(Matrix View, Matrix Projection)

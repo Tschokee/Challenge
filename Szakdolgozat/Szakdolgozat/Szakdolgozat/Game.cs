@@ -23,7 +23,8 @@ namespace Szakdolgozat
         List<CustomModel> catchableObjects = new List<CustomModel>();
         Camera camera;
         ObjectAnimation anim;
-        int score = 0;
+        int[] score = new int[4];
+        int bombCounter=3, tillBomb;
   
         public Game()
         {
@@ -60,9 +61,11 @@ namespace Szakdolgozat
             models.Add(new CustomModel(Content.Load<Model>("palm_tree"), new Vector3(-950, 260, -50), new Vector3(80, 0, 0), new Vector3(100.0f), GraphicsDevice));
             catchableObjects.Add(new CustomModel(Content.Load<Model>("ice_cream"), new Vector3(300,-150,0), Vector3.Zero, new Vector3(100.0f), GraphicsDevice));
             catchableObjects.Add(new CustomModel(Content.Load<Model>("ice_cream_2"), new Vector3(-300, -150, 0), Vector3.Zero, new Vector3(25.0f), GraphicsDevice));
+            catchableObjects.Add(new CustomModel(Content.Load<Model>("bomb"), new Vector3(200, -150, 0), Vector3.Zero, new Vector3(35.0f), GraphicsDevice));
             camera = new TargetCamera(new Vector3(0, 0, 1200),Vector3.Zero, GraphicsDevice);
             anim = new ObjectAnimation(Vector3.Zero, Vector3.Zero, Vector3.Zero,
-                                       new Vector3(0, -MathHelper.TwoPi, 0),TimeSpan.FromSeconds(10), true);
+                                       new Vector3(0, -MathHelper.TwoPi, 0),
+                                       TimeSpan.FromSeconds(10), true);
         }
 
         /// <summary>
@@ -80,8 +83,7 @@ namespace Szakdolgozat
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            // Allows the game to exit
-            if (Keyboard.GetState().IsKeyDown(Keys.Escape) || score == 35)
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape) || (score[0] >= 10 && score[1] >= 10))
                 this.Exit();
 
             camera.Update();
@@ -95,15 +97,25 @@ namespace Szakdolgozat
 
         void updateModel(GameTime gameTime)
         {
-            if (collisionDetect(0))
+            for (int i = 0 ; i < 1 ; i++)
             {
-                score++;
-                catchableObjects[0].Position = generateRandomVector();
-            }
-            if (collisionDetect(1))
-            {
-                score++;
-                catchableObjects[1].Position = generateRandomVector();
+                if (collisionDetect(i))
+                {
+                    if(!UCanSeeTheBomb())
+                        score[i]++;
+                    catchableObjects[i].Position = generateRandomVector(i);
+                    while (collisionDetect(i)) 
+                       catchableObjects[i].Position = generateRandomVector(i);
+                }
+                if (UTouchedTheBomb(0))
+                {
+                    if (UCanSeeTheBomb())
+                    {
+                        score[2]++;
+                        score[0] -= 2;
+                    }
+                    catchableObjects[2].Position = generateRandomVector(0);
+                }
             }
             KeyboardState keyState = Keyboard.GetState();
             Vector3 posChange = new Vector3(0, 0, 0);
@@ -132,18 +144,34 @@ namespace Szakdolgozat
 
         public bool collisionDetect(int iceCreamNumber)
         {
-            if (models[2].BoundingSphere.Intersects(catchableObjects[iceCreamNumber].BoundingSphere))
+            if (models[iceCreamNumber+2].BoundingSphere.Intersects(catchableObjects[iceCreamNumber].BoundingSphere))
                 return true;
             return false;
         }
 
-        public Vector3 generateRandomVector()
+        public bool UTouchedTheBomb(int bombNumber)
+        {
+            if (models[2+bombNumber].BoundingSphere.Intersects(catchableObjects[2+bombNumber].BoundingSphere))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public bool UCanSeeTheBomb()
+        {
+            if (score[0] == bombCounter)
+                return true;
+            return false;
+        }
+
+        public Vector3 generateRandomVector(int direction)
         {
             Vector3 v3 = Vector3.Zero;
             Random rnd = new Random();
             v3.X = rnd.Next(200, 500);
             v3.Y = rnd.Next(250);
-            if (rnd.Next(100) % 2 == 0)
+            if (direction == 1)
                 v3.X*=-1;
             if (rnd.Next(100) % 2 == 0)
                 v3.Y *= -1;
@@ -160,14 +188,22 @@ namespace Szakdolgozat
 
             foreach (CustomModel model in models)
                 model.Draw(camera.View, camera.Projection);
-            if (!collisionDetect(0))
+           /* for (int i = 0; i < 2; i++)
             {
-                catchableObjects[0].Draw(camera.View, camera.Projection);
-            }
-            if (!collisionDetect(1))
+                if (!collisionDetect(i))
+                {
+                    catchableObjects[i].Draw(camera.View, camera.Projection);
+                }
+            }*/
+            if (!collisionDetect(0) && !UTouchedTheBomb(0))
             {
-                catchableObjects[1].Draw(camera.View, camera.Projection);
-            }
+                if (!UCanSeeTheBomb())
+                    catchableObjects[0].Draw(camera.View, camera.Projection);
+                else
+                {
+                    catchableObjects[2].Draw(camera.View, camera.Projection);
+                }
+            }        
             base.Draw(gameTime);
         }
     }
