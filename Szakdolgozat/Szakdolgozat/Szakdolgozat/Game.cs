@@ -25,6 +25,8 @@ namespace Szakdolgozat
         ObjectAnimation anim;
         int[] score = new int[4];
         int bombCounter=3, tillBomb;
+        TimeSpan bombTimer;
+        SoundEffect bombEffect, iceCreamEffect, victoryEffect, defeatEffect;
   
         public Game()
         {
@@ -53,8 +55,8 @@ namespace Szakdolgozat
         protected override void LoadContent()
         {
             models.Add(new CustomModel(Content.Load<Model>("body"),Vector3.Zero,new Vector3(0,0,0),new Vector3(50.0f),GraphicsDevice));
-            models.Add(new CustomModel(Content.Load<Model>("righthand"), new Vector3(-400,200,0), new Vector3(0, 0, 0), new Vector3(50.0f), GraphicsDevice));
-            models.Add(new CustomModel(Content.Load<Model>("lefthand"), new Vector3(400, 200, 0), new Vector3(0, 0, 0), new Vector3(50.0f), GraphicsDevice));
+            models.Add(new CustomModel(Content.Load<Model>("righthand"), new Vector3(-400,200,0), new Vector3(0, 0, 0), new Vector3(30.0f), GraphicsDevice));
+            models.Add(new CustomModel(Content.Load<Model>("lefthand"), new Vector3(400, 200, 0), new Vector3(0, 0, 0), new Vector3(30.0f), GraphicsDevice));
             models.Add(new CustomModel(Content.Load<Model>("foot"), new Vector3(100, 0, 0), new Vector3(0, 0, 0), new Vector3(30.0f, 50.0f, 50.0f), GraphicsDevice));
             models.Add(new CustomModel(Content.Load<Model>("foot"), new Vector3(-100, 0, 0), new Vector3(0, 0, 0), new Vector3(30.0f, 50.0f, 50.0f), GraphicsDevice));
             models.Add(new CustomModel(Content.Load<Model>("ground"), new Vector3(0, 0, -700), new Vector3(0, 0, 0), new Vector3(150.0f), GraphicsDevice));
@@ -66,6 +68,11 @@ namespace Szakdolgozat
             anim = new ObjectAnimation(Vector3.Zero, Vector3.Zero, Vector3.Zero,
                                        new Vector3(0, -MathHelper.TwoPi, 0),
                                        TimeSpan.FromSeconds(10), true);
+            bombEffect = Content.Load<SoundEffect>("Big Bomb-SoundBible.com-1219802495");
+            iceCreamEffect = Content.Load<SoundEffect>("Tiny Button Push-SoundBible.com-513260752");
+            victoryEffect = Content.Load<SoundEffect>("Applause-SoundBible.com-151138312");
+            defeatEffect = Content.Load<SoundEffect>("Sad_Trombone-Joe_Lamb-665429450");
+           
         }
 
         /// <summary>
@@ -101,16 +108,20 @@ namespace Szakdolgozat
             {
                 if (collisionDetect(i))
                 {
-                    if(!UCanSeeTheBomb())
+                    if (!UCanSeeTheBomb(gameTime))
+                    {
                         score[i]++;
+                        iceCreamEffect.Play();
+                    }
                     catchableObjects[i].Position = generateRandomVector(i);
                     while (collisionDetect(i)) 
                        catchableObjects[i].Position = generateRandomVector(i);
                 }
                 if (UTouchedTheBomb(0))
                 {
-                    if (UCanSeeTheBomb())
+                    if (UCanSeeTheBomb(gameTime))
                     {
+                        bombEffect.Play();
                         score[2]++;
                         score[0] -= 2;
                     }
@@ -158,10 +169,15 @@ namespace Szakdolgozat
             return false;
         }
 
-        public bool UCanSeeTheBomb()
+        public bool UCanSeeTheBomb(GameTime gameTime)
         {
             if (score[0] == bombCounter)
-                return true;
+            {
+                bombTimer = gameTime.ElapsedGameTime;
+                //if(bombTimer.TotalSeconds < gameTime.ElapsedGameTime.TotalSeconds)
+                     return true;
+                //else return false;
+            }
             return false;
         }
 
@@ -197,7 +213,7 @@ namespace Szakdolgozat
             }*/
             if (!collisionDetect(0) && !UTouchedTheBomb(0))
             {
-                if (!UCanSeeTheBomb())
+                if (!UCanSeeTheBomb(gameTime))
                     catchableObjects[0].Draw(camera.View, camera.Projection);
                 else
                 {
