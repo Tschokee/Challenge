@@ -24,9 +24,9 @@ namespace Szakdolgozat
         Camera camera;
         ObjectAnimation anim;
         int[] score = new int[4];
-        int bombCounter=3, tillBomb;
-        TimeSpan bombTimer;
-        SoundEffect bombEffect, iceCreamEffect, victoryEffect, defeatEffect;
+        int bombCounter = new Random().Next(5,10);
+        Random evilBombCounter = new Random();
+        SoundEffect bombEffect, iceCreamEffect, victoryEffect, defeatEffect, extinguisherEffect;
   
         public Game()
         {
@@ -64,6 +64,9 @@ namespace Szakdolgozat
             catchableObjects.Add(new CustomModel(Content.Load<Model>("ice_cream"), new Vector3(300,-150,0), Vector3.Zero, new Vector3(100.0f), GraphicsDevice));
             catchableObjects.Add(new CustomModel(Content.Load<Model>("ice_cream_2"), new Vector3(-300, -150, 0), Vector3.Zero, new Vector3(25.0f), GraphicsDevice));
             catchableObjects.Add(new CustomModel(Content.Load<Model>("bomb"), new Vector3(200, -150, 0), Vector3.Zero, new Vector3(35.0f), GraphicsDevice));
+            catchableObjects.Add(new CustomModel(Content.Load<Model>("bomb"), new Vector3(-200, -150, 0), Vector3.Zero, new Vector3(35.0f), GraphicsDevice));
+            catchableObjects.Add(new CustomModel(Content.Load<Model>("f_e"), new Vector3(450, -200, 0), Vector3.Zero, new Vector3(25.0f), GraphicsDevice));
+            catchableObjects.Add(new CustomModel(Content.Load<Model>("f_e"), new Vector3(-450, -200, 0), Vector3.Zero, new Vector3(25.0f), GraphicsDevice));
             camera = new TargetCamera(new Vector3(0, 0, 1200),Vector3.Zero, GraphicsDevice);
             anim = new ObjectAnimation(Vector3.Zero, Vector3.Zero, Vector3.Zero,
                                        new Vector3(0, -MathHelper.TwoPi, 0),
@@ -72,6 +75,7 @@ namespace Szakdolgozat
             iceCreamEffect = Content.Load<SoundEffect>("Tiny Button Push-SoundBible.com-513260752");
             victoryEffect = Content.Load<SoundEffect>("Applause-SoundBible.com-151138312");
             defeatEffect = Content.Load<SoundEffect>("Sad_Trombone-Joe_Lamb-665429450");
+            extinguisherEffect = Content.Load<SoundEffect>("f_ex");
            
         }
 
@@ -108,7 +112,7 @@ namespace Szakdolgozat
             {
                 if (collisionDetect(i))
                 {
-                    if (!UCanSeeTheBomb(gameTime))
+                    if (!UCanSeeTheBomb(0))
                     {
                         score[i]++;
                         iceCreamEffect.Play();
@@ -119,17 +123,27 @@ namespace Szakdolgozat
                 }
                 if (UTouchedTheBomb(0))
                 {
-                    if (UCanSeeTheBomb(gameTime))
+                    if (UCanSeeTheBomb(0))
                     {
                         bombEffect.Play();
                         score[2]++;
-                        score[0] -= 2;
+                        bombCounter += evilBombCounter.Next(5, 10);
                     }
                     catchableObjects[2].Position = generateRandomVector(0);
                 }
+                if (UCanSeeTheBomb(0))
+                {
+                    if (UTouchedTheExtinguisher(455))
+                    {
+                        extinguisherEffect.Play();
+                        bombCounter += evilBombCounter.Next(5, 10);
+                    }
+                }
             }
+           
             KeyboardState keyState = Keyboard.GetState();
             Vector3 posChange = new Vector3(0, 0, 0);
+            Vector3 posChange2 = new Vector3(0, 0, 0);
             if (keyState.IsKeyDown(Keys.D))
                 posChange += new Vector3(1, 0, 0);
             if (keyState.IsKeyDown(Keys.A))
@@ -139,10 +153,24 @@ namespace Szakdolgozat
             if (keyState.IsKeyDown(Keys.S))
                 posChange += new Vector3(0, -1, 0);
             models[2].Position += posChange * 10f;
+
+            if (keyState.IsKeyDown(Keys.H))
+                posChange2 += new Vector3(1, 0, 0);
+            if (keyState.IsKeyDown(Keys.F))
+                posChange2 += new Vector3(-1, 0, 0);
+            if (keyState.IsKeyDown(Keys.T))
+                posChange2 += new Vector3(0, 1, 0);
+            if (keyState.IsKeyDown(Keys.G))
+                posChange2 += new Vector3(0, -1, 0);
+            models[4].Position += posChange2 * 10f;
+
             if (keyState.IsKeyUp(Keys.Space))
                 return;
             Matrix rotation = Matrix.CreateFromYawPitchRoll(models[2].Rotation.Y, models[2].Rotation.X, models[2].Rotation.Z);
             models[2].Position += Vector3.Transform(Vector3.Forward, rotation) * (float)gameTime.ElapsedGameTime.TotalMilliseconds * 4;
+           
+            Matrix rotation2 = Matrix.CreateFromYawPitchRoll(models[4].Rotation.Y, models[4].Rotation.X, models[4].Rotation.Z);
+            models[4].Position += Vector3.Transform(Vector3.Forward, rotation2) * (float)gameTime.ElapsedGameTime.TotalMilliseconds * 4;
         }
 
         void updateCamera(GameTime gameTime)
@@ -163,21 +191,21 @@ namespace Szakdolgozat
         public bool UTouchedTheBomb(int bombNumber)
         {
             if (models[2+bombNumber].BoundingSphere.Intersects(catchableObjects[2+bombNumber].BoundingSphere))
-            {
                 return true;
-            }
             return false;
         }
 
-        public bool UCanSeeTheBomb(GameTime gameTime)
+        public bool UCanSeeTheBomb(int bombScoreId)
         {
-            if (score[0] == bombCounter)
-            {
-                bombTimer = gameTime.ElapsedGameTime;
-                //if(bombTimer.TotalSeconds < gameTime.ElapsedGameTime.TotalSeconds)
-                     return true;
-                //else return false;
-            }
+            if (score[bombScoreId] == bombCounter)
+                return true;
+            return false;
+        }
+
+        public bool UTouchedTheExtinguisher(int extinguisherNumber)
+        {
+            if (models[4].BoundingSphere.Intersects(catchableObjects[5].BoundingSphere))
+                return true;
             return false;
         }
 
@@ -213,11 +241,12 @@ namespace Szakdolgozat
             }*/
             if (!collisionDetect(0) && !UTouchedTheBomb(0))
             {
-                if (!UCanSeeTheBomb(gameTime))
+                if (!UCanSeeTheBomb(0))
                     catchableObjects[0].Draw(camera.View, camera.Projection);
                 else
                 {
                     catchableObjects[2].Draw(camera.View, camera.Projection);
+                    catchableObjects[5].Draw(camera.View, camera.Projection);
                 }
             }        
             base.Draw(gameTime);

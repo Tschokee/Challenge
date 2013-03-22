@@ -60,6 +60,7 @@ namespace Szakdolgozat
                 BoundingSphere transformed =
                     mesh.BoundingSphere.Transform(modelTransforms[mesh.ParentBone.Index]);
                 sphere = BoundingSphere.CreateMerged(sphere, transformed);
+                sphere.Radius *= (float)0.7;
             }
             this.boundingSphere = sphere;
 
