@@ -25,7 +25,7 @@ namespace Szakdolgozat
         int[] score = new int[4];
         int[] bombCounter = { new Random().Next(5, 10), new Random().Next(5, 10) };
         Random evilBombCounter = new Random();
-        SoundEffect bombEffect, iceCreamEffect, victoryEffect, defeatEffect, extinguisherEffect;
+        SoundEffect bombEffect, iceCreamEffect, extinguisherEffect;
         Skeleton[] skeletonData;
         Skeleton skeleton;
         KinectSensor kinect;
@@ -65,6 +65,7 @@ namespace Szakdolgozat
             models.Add(new CustomModel(Content.Load<Model>("lefthand"), new Vector3(400, 200, 0), new Vector3(0, 0, 0), new Vector3(30.0f), GraphicsDevice));
             models.Add(new CustomModel(Content.Load<Model>("foot"), new Vector3(100, 0, 0), new Vector3(0, 0, 0), new Vector3(30.0f, 50.0f, 50.0f), GraphicsDevice));
             models.Add(new CustomModel(Content.Load<Model>("foot"), new Vector3(-100, 0, 0), new Vector3(0, 0, 0), new Vector3(30.0f, 50.0f, 50.0f), GraphicsDevice));
+            models.Add(new CustomModel(Content.Load<Model>("head"), Vector3.Zero, new Vector3(0, 0, 0), new Vector3(50.0f), GraphicsDevice));
             models.Add(new CustomModel(Content.Load<Model>("ground"), new Vector3(0, 0, -700), new Vector3(0, 0, 0), new Vector3(150.0f), GraphicsDevice));
             models.Add(new CustomModel(Content.Load<Model>("palm_tree"), new Vector3(-950, 260, -50), new Vector3(80, 0, 0), new Vector3(100.0f), GraphicsDevice));
             catchableObjects.Add(new CustomModel(Content.Load<Model>("ice_cream"), new Vector3(300,-150,0), Vector3.Zero, new Vector3(100.0f), GraphicsDevice));
@@ -79,8 +80,6 @@ namespace Szakdolgozat
                                        TimeSpan.FromSeconds(10), true);
             bombEffect = Content.Load<SoundEffect>("Big Bomb-SoundBible.com-1219802495");
             iceCreamEffect = Content.Load<SoundEffect>("Tiny Button Push-SoundBible.com-513260752");
-            victoryEffect = Content.Load<SoundEffect>("Applause-SoundBible.com-151138312");
-            defeatEffect = Content.Load<SoundEffect>("Sad_Trombone-Joe_Lamb-665429450");
             extinguisherEffect = Content.Load<SoundEffect>("f_ex");
         }
 
@@ -99,7 +98,7 @@ namespace Szakdolgozat
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.Escape) || (score[0] >= 20 && score[1] >= 20) || (score[2] + score[3] == 3))
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape) || (score[0] >= 30 && score[1] >= 30) || (score[2] + score[3] == 3))
                 this.Exit();
 
             camera.Update();
@@ -152,12 +151,12 @@ namespace Szakdolgozat
                 positionPlsToTheRightPlaceTY(2, JointType.HandRight);
                 positionPlsToTheRightPlaceTY(4, JointType.FootLeft,100);
                 positionPlsToTheRightPlaceTY(3, JointType.FootRight,100);
+                positionPlsToTheRightPlaceTY(5, JointType.Head,550);
             }
         }
 
         void updateCamera(GameTime gameTime)
         {
-            // Move the camera to the new model's position and orientation
             camera.Update();
         }
 
