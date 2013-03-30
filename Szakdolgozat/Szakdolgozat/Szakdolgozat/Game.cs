@@ -17,7 +17,6 @@ namespace Szakdolgozat
     /// </summary>
     public class Game : Microsoft.Xna.Framework.Game
     {
-        //KinectSensor ks = KinectSensor.KinectSensors[0];
         GraphicsDeviceManager graphics;
         List<CustomModel> models = new List<CustomModel>();
         List<CustomModel> catchableObjects = new List<CustomModel>();
@@ -27,6 +26,9 @@ namespace Szakdolgozat
         int[] bombCounter = { new Random().Next(5, 10), new Random().Next(5, 10) };
         Random evilBombCounter = new Random();
         SoundEffect bombEffect, iceCreamEffect, victoryEffect, defeatEffect, extinguisherEffect;
+        Skeleton[] skeletonData;
+        Skeleton skeleton;
+        KinectSensor kinect;
   
         public Game()
         {
@@ -45,6 +47,10 @@ namespace Szakdolgozat
         /// </summary>
         protected override void Initialize()
         {
+            kinect = KinectSensor.KinectSensors[0];
+            kinect.SkeletonStream.Enable();
+            kinect.AllFramesReady += new EventHandler<AllFramesReadyEventArgs>(kinect_AllFramesReady);
+            kinect.Start();
             base.Initialize();
         }
 
@@ -76,7 +82,6 @@ namespace Szakdolgozat
             victoryEffect = Content.Load<SoundEffect>("Applause-SoundBible.com-151138312");
             defeatEffect = Content.Load<SoundEffect>("Sad_Trombone-Joe_Lamb-665429450");
             extinguisherEffect = Content.Load<SoundEffect>("f_ex");
-           
         }
 
         /// <summary>
@@ -140,74 +145,34 @@ namespace Szakdolgozat
                     }
                 }
             }
-           
-            KeyboardState keyState = Keyboard.GetState();
-            Vector3 posChange1 = new Vector3(0, 0, 0);
-            Vector3 posChange2 = new Vector3(0, 0, 0);
-            Vector3 posChange3 = new Vector3(0, 0, 0);
-            Vector3 posChange4 = new Vector3(0, 0, 0);
-            if (keyState.IsKeyDown(Keys.L))
-                posChange1 += new Vector3(1, 0, 0);
-            if (keyState.IsKeyDown(Keys.J))
-                posChange1 += new Vector3(-1, 0, 0);
-            if (keyState.IsKeyDown(Keys.I))
-                posChange1 += new Vector3(0, 1, 0);
-            if (keyState.IsKeyDown(Keys.K))
-                posChange1 += new Vector3(0, -1, 0);
-            models[1].Position += posChange1 * 10f;
-
-            if (keyState.IsKeyDown(Keys.D))
-                posChange2 += new Vector3(1, 0, 0);
-            if (keyState.IsKeyDown(Keys.A))
-                posChange2 += new Vector3(-1, 0, 0);
-            if (keyState.IsKeyDown(Keys.W))
-                posChange2 += new Vector3(0, 1, 0);
-            if (keyState.IsKeyDown(Keys.S))
-                posChange2 += new Vector3(0, -1, 0);
-            models[2].Position += posChange2 * 10f;
-
-            if (keyState.IsKeyDown(Keys.Right))
-                posChange3 += new Vector3(1, 0, 0);
-            if (keyState.IsKeyDown(Keys.Left))
-                posChange3 += new Vector3(-1, 0, 0);
-            if (keyState.IsKeyDown(Keys.Up))
-                posChange3 += new Vector3(0, 1, 0);
-            if (keyState.IsKeyDown(Keys.Down))
-                posChange3 += new Vector3(0, -1, 0);
-            models[3].Position += posChange3 * 10f;
-
-            if (keyState.IsKeyDown(Keys.H))
-                posChange4 += new Vector3(1, 0, 0);
-            if (keyState.IsKeyDown(Keys.F))
-                posChange4 += new Vector3(-1, 0, 0);
-            if (keyState.IsKeyDown(Keys.T))
-                posChange4 += new Vector3(0, 1, 0);
-            if (keyState.IsKeyDown(Keys.G))
-                posChange4 += new Vector3(0, -1, 0);
-            models[4].Position += posChange4 * 10f;
-
-            if (keyState.IsKeyUp(Keys.Space))
-                return;
-
-            Matrix rotation1 = Matrix.CreateFromYawPitchRoll(models[1].Rotation.Y, models[1].Rotation.X, models[1].Rotation.Z);
-            models[1].Position += Vector3.Transform(Vector3.Forward, rotation1) * (float)gameTime.ElapsedGameTime.TotalMilliseconds * 4;
-
-            Matrix rotation2 = Matrix.CreateFromYawPitchRoll(models[2].Rotation.Y, models[2].Rotation.X, models[2].Rotation.Z);
-            models[2].Position += Vector3.Transform(Vector3.Forward, rotation2) * (float)gameTime.ElapsedGameTime.TotalMilliseconds * 4;
-
-            Matrix rotation3 = Matrix.CreateFromYawPitchRoll(models[3].Rotation.Y, models[3].Rotation.X, models[3].Rotation.Z);
-            models[3].Position += Vector3.Transform(Vector3.Forward, rotation3) * (float)gameTime.ElapsedGameTime.TotalMilliseconds * 4;
-           
-            Matrix rotation4 = Matrix.CreateFromYawPitchRoll(models[4].Rotation.Y, models[4].Rotation.X, models[4].Rotation.Z);
-            models[4].Position += Vector3.Transform(Vector3.Forward, rotation4) * (float)gameTime.ElapsedGameTime.TotalMilliseconds * 4;
+            if (skeleton != null)
+            {
+                positionPlsToTheRightPlaceTY(0, JointType.Spine);
+                positionPlsToTheRightPlaceTY(1, JointType.HandLeft);
+                positionPlsToTheRightPlaceTY(2, JointType.HandRight);
+                positionPlsToTheRightPlaceTY(4, JointType.FootLeft,100);
+                positionPlsToTheRightPlaceTY(3, JointType.FootRight,100);
+            }
         }
 
         void updateCamera(GameTime gameTime)
         {
             // Move the camera to the new model's position and orientation
-            //((ChaseCamera)camera).Move(models[0].Position,models[0].Rotation);
-            // Update the camera
             camera.Update();
+        }
+
+        public void positionPlsToTheRightPlaceTY(int id, JointType bodyPart)
+        {
+            models[id].Position = new Vector3(((((0.5f * skeleton.Joints[bodyPart].Position.X) + 0.5f) * (graphics.PreferredBackBufferWidth))) - 600f,
+                                                ((((0.5f * skeleton.Joints[bodyPart].Position.Y) + 0.5f) * (graphics.PreferredBackBufferHeight))) - 400f,
+                                                0);
+        }
+
+        public void positionPlsToTheRightPlaceTY(int id, JointType bodyPart, float shiftY)
+        {
+            models[id].Position = new Vector3(((((0.5f * skeleton.Joints[bodyPart].Position.X) + 0.5f) * (graphics.PreferredBackBufferWidth))) - 600f,
+                                                ((((0.5f * skeleton.Joints[bodyPart].Position.Y) + 0.5f) * (graphics.PreferredBackBufferHeight))) - shiftY,
+                                                0);
         }
 
         public bool collisionDetect(int iceCreamNumber)
@@ -249,6 +214,24 @@ namespace Szakdolgozat
             if (rnd.Next(100) % 2 == 0)
                 v3.Y *= -1;
             return v3;     
+        }
+
+        void kinect_AllFramesReady(object sender, AllFramesReadyEventArgs imageFrames)
+        {
+            // Skeleton Frame
+            using (SkeletonFrame skeletonFrame = imageFrames.OpenSkeletonFrame())
+            {
+                if (skeletonFrame != null)
+                {
+                    if ((skeletonData == null) || (this.skeletonData.Length != skeletonFrame.SkeletonArrayLength))
+                        this.skeletonData = new Skeleton[skeletonFrame.SkeletonArrayLength];
+                    skeletonFrame.CopySkeletonDataTo(this.skeletonData);
+                }
+            }
+            if (skeletonData != null)
+                foreach (Skeleton skel in skeletonData)
+                    if (skel.TrackingState == SkeletonTrackingState.Tracked)
+                        skeleton = skel;
         }
 
         /// <summary>
